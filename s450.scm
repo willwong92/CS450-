@@ -1,5 +1,5 @@
 ;;; file: s450.scm (base)
-;;;
+;;; Edited by: William Wong
 ;;; Metacircular evaluator from chapter 4 of STRUCTURE AND
 ;;; INTERPRETATION OF COMPUTER PROGRAMS (2nd edition)
 ;;;
