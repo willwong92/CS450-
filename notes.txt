@@ -1,0 +1,49 @@
+1:
+I've played with the s450 interpreter and noticed that not all primitives
+were functioning(null?,display,arithmetic operators(+,*,-,/)), only the basic
+primitives for list handling (car,cdr,cons,). Exceptions are also very limited;
+if the user types an undefined variable or object the interpreter will
+terminate prematurely. However if the user has defined a variable or procedure
+in the (s450) interpreter, those variables and values will be saved in the-
+global-environment despite terminating the evaluator. Once (s450) is invoked those values will still be in the global-environment without exiting UMB scheme
+altogether.
+
+When re writing how special forms are called I was a bit lost and did not
+understand how the interpreter will look for special forms since we are
+installing it into a table rather than the environment. But in a way
+the table was just another extension to the environment but for special forms.
+Lookup will pass user arguements to the body of the procedure
+in the table and will operate from there.
+
+However this procedure does not work properly inside (s450). It could be
+that the visibility of the table is not accessable inside of (s450) because
+when install-special-form is invoked it does not return an error. However
+if i call the aforementioned special form procedure that i just inserted
+xeval does not detect anything also.
+
+For checking special form conflicts, simply place predicates inside the
+define-variable! and define-assignment procedures.
+
+For installing primitive procedures I tried to implement it like the way
+we installed special forms but that would require two separate tables to be
+inserted into the xtended environment. That would have been extremely inefficient and definitely not simpler than what was already present. Define already
+had a helper function specifically designed to install variables or user
+defined procedures into the environment so I used that. Also xapply is designed
+to check for primitives with the 'primitive tag attached. Therefore when
+implementing the (install-primitive-procedure) it will attach the 'primitive
+tag to distinguish primitive procedures.
+
+Another version of this method is required if it is to be called inside
+(s450). This was simple, since all variables have to be looked up
+they must exist in the first-frame. When I first tried to pass a symbol
+to the environment I got an error, I realized that it must be xevaled
+before doing anything useful with it. So by passing the quoted variable
+to xeval I was finally able to store that variable in a frame. Just like
+how define works. Unfortunately for me if I want to install a primitive procedure it must be included in primive-type list because there is no way(at least
+that i know of) to get body of a primitive(< primitive: car Pair >) in (s450)
+since there is no such check for this.
+
+Although the capabilities of s450 are limited, it is still a good
+representation of the official interpreter. Since implementation of the
+interpreter is based around manipulating lists it was interesting to see
+how data is stored and extracted.
